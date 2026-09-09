@@ -3,12 +3,12 @@
 
 #define GLOBALVAR_COUNT (0x100)
 
-#define ACHIEVEMENT_MAX (0x40)
-#define LEADERBOARD_MAX (0x80)
+#define ACHIEVEMENT_COUNT (0x40)
+#define LEADERBOARD_COUNT (0x80)
 
-#define MOD_MAX (0x100)
+#define MOD_COUNT (0x100)
 
-#define SAVEDATA_MAX (0x2000)
+#define SAVEDATA_SIZE (0x2000)
 
 enum OnlineMenuTypes {
     ONLINEMENU_ACHIEVEMENTS = 0,
@@ -29,16 +29,16 @@ extern int globalVariables[GLOBALVAR_COUNT];
 extern char globalVariableNames[GLOBALVAR_COUNT][0x20];
 
 extern char gamePath[0x100];
-extern int saveRAM[SAVEDATA_MAX];
-extern Achievement achievements[ACHIEVEMENT_MAX];
-extern LeaderboardEntry leaderboards[LEADERBOARD_MAX];
+extern int saveRAM[SAVEDATA_SIZE];
+extern Achievement achievements[ACHIEVEMENT_COUNT];
+extern LeaderboardEntry leaderboards[LEADERBOARD_COUNT];
 
 extern int controlMode;
 extern bool disableTouchControls;
-extern bool disableFocusPause;
-extern bool disableFocusPause_Config;
+extern int disableFocusPause;
+extern int disableFocusPause_Config;
 
-#if RETRO_USE_MOD_LOADER
+#if RETRO_USE_MOD_LOADER || !RETRO_USE_ORIGINAL_CODE
 extern bool forceUseScripts;
 extern bool forceUseScripts_Config;
 #endif
@@ -62,12 +62,21 @@ inline void SetGlobalVariableByName(const char *name, int value)
     }
 }
 
+inline int GetGlobalVariableID(const char *name)
+{
+    for (int v = 0; v < globalVariablesCount; ++v) {
+        if (StrComp(name, globalVariableNames[v]))
+            return v;
+    }
+    return 0xFF;
+}
+
 extern bool useSGame;
 bool ReadSaveRAMData();
 bool WriteSaveRAMData();
 
 void InitUserdata();
-void writeSettings();
+void WriteSettings();
 void ReadUserdata();
 void WriteUserdata();
 

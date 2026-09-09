@@ -14,7 +14,24 @@ public class RSDKv3 extends SDLActivity {
     protected void onStart() {
         super.onStart();
         getBasePath();
+    }
 
+    //Idk what the hell "has multi window" is, but I do NOT have multiple windows and therefore DO wanna pause/resume these threads
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mHasMultiWindow) {
+            pauseNativeThread();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (mHasMultiWindow) {
+            resumeNativeThread();
+        }
     }
 
     public String getBasePath() {

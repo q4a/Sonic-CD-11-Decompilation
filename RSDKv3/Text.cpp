@@ -32,12 +32,12 @@ void LoadFontFile(const char *filePath)
             fontCharacterList[cnt].srcY += fileBuffer << 8;
 
             FileRead(&fileBuffer, 1);
-            fontCharacterList[cnt].width = fileBuffer;
+            fontCharacterList[cnt].width = fileBuffer + 1;
             FileRead(&fileBuffer, 1);
             fontCharacterList[cnt].width += fileBuffer << 8;
 
             FileRead(&fileBuffer, 1);
-            fontCharacterList[cnt].height = fileBuffer;
+            fontCharacterList[cnt].height = fileBuffer + 1;
             FileRead(&fileBuffer, 1);
             fontCharacterList[cnt].height += fileBuffer << 8;
 
@@ -84,7 +84,7 @@ void LoadFontFile(const char *filePath)
 }
 void LoadTextFile(TextMenu *menu, const char *filePath, byte mapCode)
 {
-    bool flag = false;
+    bool finished = false;
     FileInfo info;
     byte fileBuffer = 0;
     if (LoadFile(filePath, &info)) {
@@ -92,21 +92,22 @@ void LoadTextFile(TextMenu *menu, const char *filePath, byte mapCode)
         menu->rowCount                   = 0;
         menu->entryStart[menu->rowCount] = menu->textDataPos;
         menu->entrySize[menu->rowCount]  = 0;
+
         FileRead(&fileBuffer, 1);
         if (fileBuffer == 0xFF) {
             FileRead(&fileBuffer, 1);
-            while (!flag) {
-                ushort val = 0;
+            while (!finished) {
+                ushort character = 0;
                 FileRead(&fileBuffer, 1);
-                val = fileBuffer;
+                character = fileBuffer;
                 FileRead(&fileBuffer, 1);
-                val |= fileBuffer << 8;
+                character |= fileBuffer << 8;
 
-                if (val != '\n') {
-                    if (val == '\r') {
+                if (character != '\n') {
+                    if (character == '\r') {
                         menu->rowCount += 1;
                         if (menu->rowCount > 511) {
-                            flag = true;
+                            finished = true;
                         }
                         else {
                             menu->entryStart[menu->rowCount] = menu->textDataPos;
@@ -117,33 +118,33 @@ void LoadTextFile(TextMenu *menu, const char *filePath, byte mapCode)
                         if (mapCode) {
                             int i = 0;
                             while (i < 1024) {
-                                if (fontCharacterList[i].id == val) {
-                                    val = i;
-                                    i   = 1025;
+                                if (fontCharacterList[i].id == character) {
+                                    character = i;
+                                    i         = 1025;
                                 }
                                 else {
                                     ++i;
                                 }
                             }
                             if (i == 1024) {
-                                val = 0;
+                                character = 0;
                             }
                         }
-                        menu->textData[menu->textDataPos++] = val;
+                        menu->textData[menu->textDataPos++] = character;
                         menu->entrySize[menu->rowCount]++;
                     }
                 }
-                if (!flag) {
-                    flag = ReachedEndOfFile();
+                if (!finished) {
+                    finished = ReachedEndOfFile();
                     if (menu->textDataPos >= TEXTDATA_COUNT)
-                        flag = true;
+                        finished = true;
                 }
             }
         }
         else {
-            ushort val = fileBuffer;
-            if (val != '\n') {
-                if (val == '\r') {
+            ushort character = fileBuffer;
+            if (character != '\n') {
+                if (character == '\r') {
                     menu->rowCount++;
                     menu->entryStart[menu->rowCount] = menu->textDataPos;
                     menu->entrySize[menu->rowCount]  = 0;
@@ -152,31 +153,31 @@ void LoadTextFile(TextMenu *menu, const char *filePath, byte mapCode)
                     if (mapCode) {
                         int i = 0;
                         while (i < 1024) {
-                            if (fontCharacterList[i].id == val) {
-                                val = i;
-                                i   = 1025;
+                            if (fontCharacterList[i].id == character) {
+                                character = i;
+                                i         = 1025;
                             }
                             else {
                                 ++i;
                             }
                         }
                         if (i == 1024) {
-                            val = 0;
+                            character = 0;
                         }
                     }
-                    menu->textData[menu->textDataPos++] = val;
+                    menu->textData[menu->textDataPos++] = character;
                     menu->entrySize[menu->rowCount]++;
                 }
             }
 
-            while (!flag) {
+            while (!finished) {
                 FileRead(&fileBuffer, 1);
-                val = fileBuffer;
-                if (val != '\n') {
-                    if (val == '\r') {
+                character = fileBuffer;
+                if (character != '\n') {
+                    if (character == '\r') {
                         menu->rowCount++;
                         if (menu->rowCount > 511) {
-                            flag = true;
+                            finished = true;
                         }
                         else {
                             menu->entryStart[menu->rowCount] = menu->textDataPos;
@@ -187,25 +188,25 @@ void LoadTextFile(TextMenu *menu, const char *filePath, byte mapCode)
                         if (mapCode) {
                             int i = 0;
                             while (i < 1024) {
-                                if (fontCharacterList[i].id == val) {
-                                    val = i;
-                                    i   = 1025;
+                                if (fontCharacterList[i].id == character) {
+                                    character = i;
+                                    i         = 1025;
                                 }
                                 else {
                                     ++i;
                                 }
                             }
                             if (i == 1024)
-                                val = 0;
+                                character = 0;
                         }
-                        menu->textData[menu->textDataPos++] = val;
+                        menu->textData[menu->textDataPos++] = character;
                         menu->entrySize[menu->rowCount]++;
                     }
                 }
-                if (!flag) {
-                    flag = ReachedEndOfFile();
+                if (!finished) {
+                    finished = ReachedEndOfFile();
                     if (menu->textDataPos >= TEXTDATA_COUNT)
-                        flag = true;
+                        finished = true;
                 }
             }
         }
@@ -222,7 +223,6 @@ void AddTextMenuEntry(TextMenu *menu, const char *text)
 {
     menu->entryStart[menu->rowCount]     = menu->textDataPos;
     menu->entrySize[menu->rowCount]      = 0;
-    menu->entryHighlight[menu->rowCount] = false;
     for (int i = 0; i < StrLength(text);) {
         if (text[i] != '\0') {
             menu->textData[menu->textDataPos++] = text[i];
@@ -239,7 +239,6 @@ void AddTextMenuEntryMapped(TextMenu *menu, char *text)
 {
     menu->entryStart[menu->rowCount]     = menu->textDataPos;
     menu->entrySize[menu->rowCount]      = 0;
-    menu->entryHighlight[menu->rowCount] = false;
     for (int i = 0; i < StrLength(text);) {
         if (text[i] != '\0') {
             ushort num = text[i];
@@ -270,7 +269,6 @@ void SetTextMenuEntry(TextMenu *menu, const char *text, int rowID)
 {
     menu->entryStart[rowID]              = menu->textDataPos;
     menu->entrySize[rowID]               = 0;
-    menu->entryHighlight[menu->rowCount] = false;
     for (int i = 0; i < StrLength(text);) {
         if (text[i] != '\0') {
             menu->textData[menu->textDataPos++] = text[i];
@@ -286,7 +284,6 @@ void EditTextMenuEntry(TextMenu *menu, const char *text, int rowID)
 {
     int entryPos                         = menu->entryStart[rowID];
     menu->entrySize[rowID]               = 0;
-    menu->entryHighlight[menu->rowCount] = false;
     for (int i = 0; i < StrLength(text);) {
         if (text[i] != '\0') {
             menu->textData[entryPos++] = text[i];
@@ -378,12 +375,12 @@ void LoadConfigListText(TextMenu *menu, int listNo)
                 // Stage Folder
                 FileRead(&strLen, 1);
                 FileRead(&strBuf, strLen);
-                strBuf[strLen] = 0;
+                strBuf[strLen] = '\0';
 
                 // Stage ID
                 FileRead(&strLen, 1);
                 FileRead(&strBuf, strLen);
-                strBuf[strLen] = 0;
+                strBuf[strLen] = '\0';
 
                 // Stage Name
                 FileRead(&strLen, 1);
@@ -393,8 +390,8 @@ void LoadConfigListText(TextMenu *menu, int listNo)
                 // IsHighlighted
                 FileRead(&fileBuffer, 1);
                 if (listNo == c) {
-                    menu->entryHighlight[s] = fileBuffer;
                     AddTextMenuEntry(menu, strBuf);
+                    menu->entryHighlight[menu->rowCount - 1] = fileBuffer;
                 }
             }
         }

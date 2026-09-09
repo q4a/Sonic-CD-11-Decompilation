@@ -147,7 +147,7 @@ enum AndroidHapticIDs {
 #include <algorithm>
 #include <vector>
 
-InputButton inputDevice[INPUT_MAX];
+InputButton inputDevice[INPUT_BUTTONCOUNT];
 int inputType = 0;
 
 // mania deadzone vals lol
@@ -327,9 +327,9 @@ bool getControllerButton(byte buttonID)
 
     return pressed;
 }
-#endif
+#endif //! RETRO_USING_SDL2
 
-void controllerInit(byte controllerID)
+void ControllerInit(byte controllerID)
 {
     SDL_GameController *controller = SDL_GameControllerOpen(controllerID);
     if (controller) {
@@ -338,7 +338,7 @@ void controllerInit(byte controllerID)
     }
 }
 
-void controllerClose(byte controllerID)
+void ControllerClose(byte controllerID)
 {
     SDL_GameController *controller = SDL_GameControllerFromInstanceID(controllerID);
     if (controller) {
@@ -381,7 +381,7 @@ void ProcessInput()
     }
 
     bool isPressed = false;
-    for (int i = 0; i < INPUT_MAX; i++) {
+    for (int i = 0; i < INPUT_BUTTONCOUNT; i++) {
         if (keyState[inputDevice[i].keyMappings]) {
             isPressed = true;
             break;
@@ -407,17 +407,16 @@ void ProcessInput()
     if (inputDevice[INPUT_ANY].press || inputDevice[INPUT_ANY].hold || touches > 1) {
         Engine.dimTimer = 0;
     }
-    else if (Engine.dimTimer < Engine.dimLimit) {
+    else if (Engine.dimTimer < Engine.dimLimit && !Engine.masterPaused) {
         ++Engine.dimTimer;
     }
 
 #ifdef RETRO_USING_MOUSE
     if (touches <= 0) {
-#endif //! RETRO_USING_SDL2
         int mx = 0, my = 0;
         SDL_GetMouseState(&mx, &my);
 
-        if ((mx == lastMouseX && my == lastMouseY)) {
+        if (mx == lastMouseX && my == lastMouseY) {
             ++mouseHideTimer;
             if (mouseHideTimer == 120) {
                 SDL_ShowCursor(false);
@@ -432,7 +431,6 @@ void ProcessInput()
 
         lastMouseX = mx;
         lastMouseY = my;
-#if RETRO_USING_SDL2
     }
 #endif //! RETRO_USING_MOUSE
 
@@ -458,7 +456,7 @@ void ProcessInput()
     }
 
     if (inputType == 0) {
-        for (int i = 0; i < INPUT_MAX; i++) {
+        for (int i = 0; i < INPUT_BUTTONCOUNT; i++) {
             if (keyState[inputDevice[i].keyMappings]) {
                 inputDevice[i].setHeld();
                 inputDevice[INPUT_ANY].setHeld();
@@ -469,7 +467,7 @@ void ProcessInput()
         }
     }
     else if (inputType == 1 && controller) {
-        for (int i = 0; i < INPUT_MAX; i++) {
+        for (int i = 0; i < INPUT_BUTTONCOUNT; i++) {
             if (SDL_JoystickGetButton(controller, inputDevice[i].contMappings)) {
                 inputDevice[i].setHeld();
                 inputDevice[INPUT_ANY].setHeld();
@@ -481,7 +479,7 @@ void ProcessInput()
     }
 
     bool isPressed = false;
-    for (int i = 0; i < INPUT_MAX; i++) {
+    for (int i = 0; i < INPUT_BUTTONCOUNT; i++) {
         if (keyState[inputDevice[i].keyMappings]) {
             isPressed = true;
             break;
@@ -503,9 +501,9 @@ void ProcessInput()
     if (!flag && inputType == 1) {
         inputDevice[INPUT_ANY].setReleased();
     }
-#endif
+#endif //! RETRO_USING_SDL2
 }
-#endif
+#endif //! !RETRO_USE_ORIGINAL_CODE
 
 void CheckKeyPress(InputData *input, byte flags)
 {
@@ -533,6 +531,8 @@ void CheckKeyPress(InputData *input, byte flags)
                     anyPress = true;
             }
         }
+
+        SetGlobalVariableByName("input.pressButton", anyPress);
     }
 }
 
@@ -556,6 +556,7 @@ void CheckKeyDown(InputData *input, byte flags)
         input->start = inputDevice[INPUT_START].hold;
 }
 
+#if RETRO_USE_HAPTICS
 void QueueHapticEffect(int hapticID)
 {
     if (Engine.hapticsEnabled) {
@@ -567,3 +568,4 @@ void QueueHapticEffect(int hapticID)
 void PlayHaptics(int left, int right, int power) {}
 void PlayHapticsID(int hapticID) {}
 void StopHaptics(int hapticID) {}
+#endif

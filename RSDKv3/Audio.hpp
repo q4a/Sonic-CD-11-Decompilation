@@ -9,6 +9,16 @@
 #include "SDL.h"
 #endif
 
+#if RETRO_USING_SDL1 || RETRO_USING_SDL2
+
+#define LockAudioDevice()   SDL_LockAudio()
+#define UnlockAudioDevice() SDL_UnlockAudio()
+
+#else
+#define LockAudioDevice()   ;
+#define UnlockAudioDevice() ;
+#endif
+
 #define TRACK_COUNT   (0x10)
 #define SFX_COUNT     (0x100)
 #define CHANNEL_COUNT (0x4)
@@ -105,9 +115,9 @@ void ProcessMusicStream(void *data, Sint16 *stream, int len);
 void ProcessAudioPlayback(void *data, Uint8 *stream, int len);
 void ProcessAudioMixing(Sint32 *dst, const Sint16 *src, int len, int volume, sbyte pan);
 
-inline void freeMusInfo()
+inline void FreeMusInfo()
 {
-    SDL_LockAudio();
+    LockAudioDevice();
 
 #if RETRO_USING_SDL2
     if (streamInfo[currentStreamIndex].stream)
@@ -121,14 +131,14 @@ inline void freeMusInfo()
         free(streamFile[currentStreamIndex].buffer);
     streamFile[currentStreamIndex].buffer = NULL;
 
-    SDL_UnlockAudio();
+    UnlockAudioDevice();
 }
 #else
 void ProcessMusicStream() {}
 void ProcessAudioPlayback() {}
 void ProcessAudioMixing() {}
 
-inline void freeMusInfo() { ov_clear(&streamInfo[currentStreamIndex].vorbisFile); }
+inline void FreeMusInfo() { ov_clear(&streamInfo[currentStreamIndex].vorbisFile); }
 #endif
 
 #if RETRO_USE_MOD_LOADER
@@ -143,7 +153,7 @@ bool PlayMusic(int track);
 inline void StopMusic()
 {
     musicStatus = MUSIC_STOPPED;
-    freeMusInfo();
+    FreeMusInfo();
 }
 
 void LoadSfx(char *filePath, byte sfxID);
@@ -168,10 +178,13 @@ inline void SetMusicVolume(int volume)
     masterVolume = volume;
 }
 
-inline void PauseSound()
+inline bool PauseSound()
 {
-    if (musicStatus == MUSIC_PLAYING)
+    if (musicStatus == MUSIC_PLAYING) {
         musicStatus = MUSIC_PAUSED;
+        return true;
+    }
+    return false;
 }
 
 inline void ResumeSound()

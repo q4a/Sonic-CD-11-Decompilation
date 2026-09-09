@@ -1,81 +1,107 @@
 ![](header.png?raw=true)
+
+A complete decompilation of Retro Engine v3.
+
 # **SUPPORT THE OFFICIAL RELEASE OF SONIC CD**
 + Without assets from the official release, this decompilation will not run.
 
-+ You can get the official release of Sonic CD from:
-  * [Windows (Via Steam)](https://store.steampowered.com/app/200940/Sonic_CD/)
-  * [iOS (Via the App Store)](https://apps.apple.com/us/app/sonic-cd-classic/id454316134)
-  * [Android (Via Google Play)](https://play.google.com/store/apps/details?id=com.sega.soniccd.classic&hl=en&gl=US)
-  * [Android (Via Amazon)](https://www.amazon.com/Sega-of-America-Sonic-CD/dp/B008K9UZY4/ref=sr_1_2?dchild=1&keywords=Sonic+CD&qid=1607930514&sr=8-2)
++ You can get an official release of Sonic CD from:
+  * Windows
+    * Via Steam, whether it's the original release or from [Sonic Origins](https://store.steampowered.com/app/1794960)
+    * Via the Epic Games Store, from [Sonic Origins](https://store.epicgames.com/en-US/p/sonic-origins)
+  * Nintendo Switch, from [Sonic Origins on the eShop](https://www.nintendo.com/games/detail/sonic-origins-switch/)
+  * iOS, Via the App Store
+  * Android, Via Google Play or Amazon
+    * Note that the mobile releases have been delisted. However, if you have downloaded one of these releases in the past, you can redownload it at any time in your device or store account's purchase history.
 
-Even if your platform isn't supported by the official releases, you **must** buy or officially download it for the assets (you don't need to run the official release, you just need the game assets)
+Even if your platform isn't supported by the official releases, you **must** buy or officially download it for the assets (you don't need to run the official release, you just need the game assets). See [here](https://rsdkmodding.com/Guides/Games/SonicCD/Datapack/) for a guide on how to find the required assets from your legally obtained copy of the game. Note that only FMV files from the original Steam release of the game are supported; mobile and Origins video files do not work.
 
 # Advantages over the PC version of Sonic CD
-* Sharp, pixel-perfect display
-* Controls are completely remappable via the settings.ini file
-* The window allows windows shortcuts to be used
-* Complete support for using mobile/updated scripts, allowing for features the official PC version never got to be played on PC
-* Native Windows x64 version, as well as an x86 version
+* Sharp, pixel-perfect display.
+* Controls are completely remappable via the settings.ini file.
+* The window allows windows shortcuts to be used.
+* Complete support for using mobile/updated scripts, allowing for features the official PC version never got to be played on PC.
+* Native Windows x64 version, as well as an x86 version.
 
 # Advantages over the Mobile versions of Sonic CD
-* The rendering backend is based off the PC version by default, so palettes are fully supported (Tidal Tempest water in particular)
+* The rendering backend is based off the PC version by default, so palettes are fully supported (Tidal Tempest water in particular).
 
 # Additional Tweaks
-* Added a built in mod loader and API allowing to easily create and play mods with features such as save file redirection and XML GameConfig data.
-* There is now a settings.ini file that the game uses to load all settings, similar to Sonic Mania
-* Dev menu can now be accessed from anywhere by pressing `ESC` if enabled in the config
-* The `F12` pause, `F11` step over & fast forward debug features from Sonic Mania have all been ported and are enabled if `devMenu` is enabled in the config
-* If `devMenu` is enabled in the config, pressing `F9` will visualize hitboxes, and `F10` will activate a palette overlay that shows the game's 8 internal palettes in real time
-* If `useSteamDir` is set in the config, and the user is on Windows, the game will try to load savedata from Steam's `userdata` directory (where the Steam version saves to)
-* Added the idle screen dimming feature from Sonic Mania Plus, as well as allowing the user to disable it or set how long it takes for the screen to dim
+* Added a built in mod loader and API, allowing to easily create and play mods with features such as save file redirection and XML GameConfig data.
+* There is now a settings.ini file that the game uses to load all settings, similar to Sonic Mania.
+* The dev menu can now be accessed from anywhere by pressing the `ESC` key if enabled in the config.
+* The `F12` pause, `F11` step over & fast forward debug features from Sonic Mania have all been ported and are enabled if `devMenu` is enabled in the config.
+* A number of additional dev menu debug features have been added:
+  * `F1` will load the first scene in the Presentation stage list (usually the title screen).
+  * `F2` and `F3` will load the previous and next scene in the current stage list.
+  * `F5` will reload the current scene, as well as all assets and scripts.
+  * `F8` and `F9` will visualize touch screen and object hitboxes.
+  * `F10` will activate a palette overlay that shows the game's 8 internal palettes in real time.
+* If `useSteamDir` is set in the config (Windows only), the game will try to load savedata from Steam's `userdata` directory (where the original Steam version saves to).
+* Added the idle screen dimming feature from Sonic Mania Plus, as well as allowing the user to disable it or set how long it takes for the screen to dim.
 
-# How to build
-## Windows
-* Clone the repo, then follow the instructions in the [dependencies readme for Windows](./dependencies/windows/dependencies.txt) to setup dependencies, then build via the Visual Studio solution (or just grab a prebuilt executable from the releases section.)
+# How to Build
 
-## Windows via MSYS2 (64-bit only)
-* Download the newest version of the MSYS2 installer from [here](https://www.msys2.org/) and install it.
-* Run the MINGW64 prompt (from the windows Start Menu/MSYS2 64-bit/MSYS2 MinGW 64-bit), when the program starts enter `pacman -Syuu` in the prompt and hit Enter. Press `Y` when it asks if you want to update packages. If it asks you to close the prompt, do so, then restart it and run the same command again. This updates the packages to their latest versions.
-* Now install the dependencies with the following command: `pacman -S pkg-config make git mingw-w64-x86_64-gcc mingw-w64-x86_64-SDL2 mingw-w64-x86_64-libogg mingw-w64-x86_64-libvorbis mingw-w64-x86_64-libtheora mingw-w64-x86_64-glew`.
-* Clone the repo with the following command: `git clone https://github.com/Rubberduckycooly/Sonic-CD-11-Decompilation.git`.
-* Go into the repo you just cloned with `cd Sonic-CD-11-Decompilation`.
-* Then run `make -f Makefile.msys2 CXXFLAGS=-O2 CXX=x86_64-w64-mingw32-g++ STATIC=1 -j5`.
-  * The `CXXFLAGS` option can be removed if you do not want optimizations. 
-  * -j switch is optional, but will make building faster by running it parallel on multiple cores (8 cores would be -j9.)
+This project uses [CMake](https://cmake.org/), a versatile building system that supports many different compilers and platforms. You can download CMake [here](https://cmake.org/download/). **(Make sure to enable the feature to add CMake to the system PATH during the installation!)**
 
-## Windows UWP (Phone, Xbox, etc.)
-* Clone the repo, then follow the instructions in the [dependencies readme for Windows](./dependencies/windows/dependencies.txt) and [dependencies readme for UWP](./dependencies/win-uwp/dependencies.txt) to setup dependencies, then build and deploy via the UWP Visual Studio solution.
-* After install, copy your `Data.rsdk` and `videos` folder into the apps localstate folder.
+## Get the source code
 
-## Mac
-* Clone the repo, follow the instructions in the [dependencies readme for Mac](./dependencies/mac/dependencies.txt) to setup dependencies, then build via the Xcode project (or grab a prebuilt executable from the releases section.)
+**DO NOT** download the source code ZIP archive from GitHub, as they do not include the submodules required to build the decompilation.
 
-## Linux
-* To setup your build enviroment and library dependecies run the following commands:
-  * Ubuntu (Mint, Pop!\_OS, etc...): `sudo apt install build-essential git libsdl2-dev libvorbis-dev libogg-dev libtheora-dev libglew-dev`
-  * Fedora Linux: `sudo rpm install g++ SDL2-devel libvorbis-devel libogg-devel libtheora-devel glew-devel tinyxml2-devel`
-  * Arch Linux: `sudo pacman -S base-devel git sdl2 libvorbis libogg libtheora glew tinyxml2`
-* Clone the repo with the following command: `git clone https://github.com/Rubberduckycooly/Sonic-CD-11-Decompilation.git`.
-* Go into the repo you just cloned with `cd Sonic-CD-11-Decompilation`.
-* Clone the TinyXML-2 repo with the following command: `git clone https://github.com/leethomason/tinyxml2.git ./dependencies/all/tinyxml2`.
-* Run `make CXXFLAGS=-O2 -j5`. 
-  * If your distro is using gcc 8.x.x, then add the argument `LIBS=-lstdc++fs`.
-  * The `CXXFLAGS` option can be removed if you do not want optimizations.
-  * -j switch is optional, but will make building faster by running it parallel on multiple cores (8 cores would be -j9.)
- 
-## iOS
-* Clone the repo, follow the instructions in the [dependencies readme for iOS](./dependencies/ios/dependencies.txt) to setup dependencies, then build via the Xcode project
+Instead, you will need to clone the repository using Git, which you can get [here](https://git-scm.com/downloads).
 
-## Android
-* Clone the repo, then follow the instructions in the [dependencies readme for Android](./dependencies/android/dependencies.txt).
-* Ensure the symbolic links in `android/app/jni` are correct. If not, fix them with the following on Windows:
-  * `mklink /D src ..\..\..`
-  * `mklink /D SDL ..\..\..\dependencies\android\SDL`
-* Open `android/` in Android Studio, install the NDK and everything else that it asks for, and build.
+Clone the repo **recursively**, using:
+`git clone --recursive https://github.com/RSDKModding/RSDKv3-Decompilation`
 
-## PlayStation Vita
-* Ensure you have Docker installed and run the script `build.sh` from `RSDKv3.vita`. If you are on Windows, WSL2 is recommended.
-  * NOTE: You would need to copy Sonic CD game data into `ux0:data/RSDKv3` to boot the game.
+If you've already cloned the repo, run this command inside of the repository:
+```git submodule update --init --recursive```
+
+## Getting dependencies
+
+### Windows
+To handle dependencies, you'll need to install [Visual Studio Community](https://visualstudio.microsoft.com/downloads/) (make sure to install the `Desktop development with C++` package during the installation) and [vcpkg](https://learn.microsoft.com/en-us/vcpkg/get_started/get-started?pivots=shell-cmd#1---set-up-vcpkg) (You only need to follow `1 - Set up vcpkg`).
+
+After installing those, run the following in Command Prompt (make sure to replace `[vcpkg root]` with the path to the vcpkg installation!):
+- `[vcpkg root]\vcpkg.exe install glew sdl2 libogg libtheora libvorbis --triplet=x64-windows-static` (If you're compiling a 32-bit build, replace `x64-windows-static` with `x86-windows-static`.)
+
+Finally, follow the [compilation steps below](#compiling) using `-DCMAKE_TOOLCHAIN_FILE=[vcpkg root]/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows-static -DCMAKE_PREFIX_PATH=[vcpkg root]/installed/x64-windows-static/` as arguments for `cmake -B build`.
+  - Make sure to replace each instance of `[vcpkg root]` with the path to the vcpkg installation!
+  - If you're compiling a 32-bit build, replace each instance of `x64-windows-static` with `x86-windows-static`.
+
+### Linux
+Install the following dependencies: then follow the [compilation steps below](#compiling):
+- **pacman (Arch):** `sudo pacman -S base-devel cmake glew sdl2 libogg libtheora libvorbis`
+- **apt (Debian/Ubuntu):** `sudo apt install build-essential cmake libglew-dev libglfw3-dev libsdl2-dev libogg-dev libtheora-dev libvorbis-dev`
+- **rpm (Fedora):** `sudo dnf install make gcc cmake glew-devel glfw-devel SDL2-devel libogg-devel libtheora-devel libvorbis-devel zlib-devel`
+- **apk (Alpine/PostmarketOS)** `sudo apk add build-base cmake glew-dev glfw-dev sdl2-dev libogg-dev libtheora-dev libvorbis-dev`
+- Your favorite package manager here, [make a pull request](https://github.com/RSDKModding/RSDKv3-Decompilation/fork)
+
+### Mac
+Follow the build instructions [here.](./dependencies/mac/README.md)
+
+### Android
+Follow the android build instructions [here.](./dependencies/android/README.md)
+
+## Compiling
+
+Compiling is as simple as typing the following in the root repository directory:
+```
+cmake -B build
+cmake --build build --config release
+```
+
+The resulting build will be located somewhere in `build/` depending on your system.
+
+The following cmake arguments are available when compiling:
+- Use these by adding `-D[flag-name]=[value]` to the end of the `cmake -B build` command. For example, to build with `RETRO_DISABLE_PLUS` set to on, add `-DRETRO_DISABLE_PLUS=on` to the command.
+
+### RSDKv3 flags
+- `RETRO_DISABLE_PLUS`: Whether or not to disable the Plus DLC. Takes a boolean (on/off): build with `on` when compiling for distribution. Defaults to `off`.
+- `RETRO_FORCE_CASE_INSENSITIVE`: Forces case insensivity when loading files. Takes a boolean, defaults to `off`.
+- `RETRO_MOD_LOADER`: Enables or disables the mod loader. Takes a boolean, defaults to `on`.
+- `RETRO_USE_HW_RENDER`: Enables the Hardware Renderer as an option. Takes a boolean, defaults to `on`.
+- `RETRO_ORIGINAL_CODE`: Removes any custom code. *A playable game will not be built with this enabled.* Takes a boolean, defaults to `off`.
+- `RETRO_SDL_VERSION`: *Only change this if you know what you're doing.* Switches between using SDL1 or SDL2. Takes an integer of either `1` or `2`, defaults to `2`.
 
 ## Unofficial Branches
 Follow the installation instructions in the readme of each branch.
@@ -86,37 +112,18 @@ Follow the installation instructions in the readme of each branch.
 Because these branches are unofficial, we can't provide support for them and they may not be up-to-date.
 
 ## Other Platforms
-Currently the only supported platforms are the ones listed above, however the backend uses libogg, libvorbis, libtheora & SDL2 to power it, so the codebase is very multiplatform.
+Currently the only supported platforms are the ones listed above, however the backend uses libogg, libvorbis, libtheora & SDL2 to power it (as well as tinyxml2 for the mod API), so the codebase is very multiplatform.
 If you're able to, you can clone this repo and port it to a platform not on the list.
 
 # FAQ
-### Q: Why don't some buttons in the menu work?
-A: Buttons like leaderboards & achievements require code to be added to support online functionality & menus (though they are saved anyways), and other buttons like the controls button on PC or privacy button on mobile have no game code and are instead hardcoded through callback. I just didnt feel like going through the effort to decompile all that, since its not really worth it.
-
-### Q: Is the titlecard text slightly offset when using a PC datafile?
-A: Unfortunately, it's an error with the scripts. If you wanna go into `TitleCards/R[X]\_TitleCard.txt` and fix it, be my guest, but the best fix is to set `screenWidth` to 400, instead of 424 in the settings.ini file to match the PC version's resolution.
-
-### Q: There's a weird spot on the title screen, how do I fix it?
-A: See above.
-
-### Q: The screen is tearing, how do I fix it?
-A: Try turning on VSync in settings.ini.
-
-### Q: I found a bug!
-A: Submit an issue in the issues tab and we _might_ fix it in the master branch. Don't expect any future releases, however.
-
-### Q: Will you do a decompilation for Sonic 1/Sonic 2?
-A: Yes! I've done a decompilation of RSDKv4 (the engine version that S1/S2 run on) and it can be found [here](https://github.com/Rubberduckycooly/Sonic-1-2-2013-Decompilation)!
-
-### Q: Will you do a decompilation for Sonic Mania?
-A: No. Sonic Mania is much bigger and requires that I'd decompile not only how the (far more complex) RSDKv5 works, but also all _600_+ objects work.
+You can find the FAQ [here](./FAQ.md).
 
 # Special Thanks
 * [Xeeynamo](https://github.com/Xeeynamo): for creating the RSDK Animation editor & an early version of the script unpacker, both of which got me into RSDK modding.
-* [Sappharad](https://github.com/Sappharad): for making a decompilation of the Windows Phone 7 version of Sonic CD (found [here](https://github.com/Sappharad/rvm_soniccd)) which gave me the idea & motivation to decompile the PC/IOS/Android versions.
+* [Sappharad](https://github.com/Sappharad): for making a decompilation of the Windows Phone 7 version of Sonic CD (found [here](https://github.com/Sappharad/rvm_soniccd)) which gave me the idea & motivation to decompile the PC/iOS/Android versions.
 * [SuperSonic16](https://github.com/TheSuperSonic16): for creating & adding some stuff to the Sonic CD mod loader that I asked for.
-* The Weigman for creating the header you see up here along with similar assets.
-* Everyone in the [Retro Engine Modding Server](https://dc.railgun.works/retroengine): for being supportive of me and for giving me a place to show off these things that I've found.
+* [biscuitball425](https://github.com/biscuitball425): for creating the header logo along with similar assets.
+* Everyone in the [Retro Engine Modding Server](https://dc.railgun.works/retroengine) for being supportive of me and for giving me a place to show off these things that I've found.
 
 # Contact:
 Join the [Retro Engine Modding Discord Server](https://dc.railgun.works/retroengine) for any extra questions you may need to know about the decompilation or modding it.
